@@ -14,20 +14,25 @@ const App: React.FC = () => {
   useEffect(() => {
     if (!process.env.API_KEY) {
       setApiKeyMissing(true);
+      return;
     }
 
-    // 立即显示注册弹窗（仅首次访问）
+    // 检查是否已经注册过
     const hasSubmitted = localStorage.getItem('wechat_submitted');
     console.log('👀 检查注册状态:', hasSubmitted ? '已注册' : '未注册');
     
     if (!hasSubmitted) {
-      console.log('✅ 显示注册弹窗');
-      // 使用 setTimeout 确保 DOM 完全加载
-      setTimeout(() => {
-        setShowWeChatModal(true);
-      }, 100);
+      console.log('✅ 准备显示注册弹窗');
+      // 立即显示弹窗
+      setShowWeChatModal(true);
+    } else {
+      console.log('ℹ️ 用户已注册，跳过弹窗');
     }
   }, []);
+
+  const handleModalClose = () => {
+    setShowWeChatModal(false);
+  };
 
   if (apiKeyMissing) {
     return (
@@ -113,10 +118,12 @@ const App: React.FC = () => {
       </div>
 
       {/* WeChat Collection Modal */}
-      <WeChatModal 
-        isOpen={showWeChatModal} 
-        onClose={() => setShowWeChatModal(false)} 
-      />
+      {showWeChatModal && (
+        <WeChatModal 
+          isOpen={showWeChatModal} 
+          onClose={handleModalClose} 
+        />
+      )}
     </div>
   );
 };

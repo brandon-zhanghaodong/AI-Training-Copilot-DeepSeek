@@ -13,14 +13,6 @@ export default function WeChatModal({ isOpen, onClose }: WeChatModalProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 
-  useEffect(() => {
-    // 检查是否已经提交过
-    const hasSubmitted = localStorage.getItem('wechat_submitted');
-    if (hasSubmitted) {
-      setSubmitted(true);
-    }
-  }, []);
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -104,7 +96,7 @@ export default function WeChatModal({ isOpen, onClose }: WeChatModalProps) {
     }
   };
 
-  if (!isOpen || submitted) return null;
+  if (!isOpen) return null;
 
   return (
     <div 
