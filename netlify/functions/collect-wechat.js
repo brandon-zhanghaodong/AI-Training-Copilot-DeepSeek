@@ -63,7 +63,7 @@ exports.handler = async (event, context) => {
     }
 
     // 记录到日志（Netlify 会保存这些日志）
-    console.log('新用户注册信息:', {
+    const userData = {
       name,
       company,
       wechat,
@@ -71,7 +71,20 @@ exports.handler = async (event, context) => {
       timestamp: timestamp || new Date().toISOString(),
       userAgent: event.headers['user-agent'],
       ip: event.headers['x-forwarded-for'] || event.headers['client-ip']
-    });
+    };
+    
+    console.log('='.repeat(60));
+    console.log('🎉 新用户注册信息');
+    console.log('='.repeat(60));
+    console.log('👤 姓名:', name);
+    console.log('🏢 公司:', company);
+    console.log('📱 微信:', wechat);
+    console.log('📧 联系方式:', contact);
+    console.log('🕒 注册时间:', userData.timestamp);
+    console.log('🌍 IP地址:', userData.ip);
+    console.log('='.repeat(60));
+    console.log('JSON 数据:', JSON.stringify(userData, null, 2));
+    console.log('='.repeat(60));
 
     // 可选：发送到 Google Sheets 或其他服务
     // 这里可以添加 Google Sheets API 调用

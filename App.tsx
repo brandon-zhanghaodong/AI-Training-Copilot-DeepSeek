@@ -18,8 +18,14 @@ const App: React.FC = () => {
 
     // 立即显示注册弹窗（仅首次访问）
     const hasSubmitted = localStorage.getItem('wechat_submitted');
+    console.log('👀 检查注册状态:', hasSubmitted ? '已注册' : '未注册');
+    
     if (!hasSubmitted) {
-      setShowWeChatModal(true);
+      console.log('✅ 显示注册弹窗');
+      // 使用 setTimeout 确保 DOM 完全加载
+      setTimeout(() => {
+        setShowWeChatModal(true);
+      }, 100);
     }
   }, []);
 
