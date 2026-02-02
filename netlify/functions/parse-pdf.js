@@ -43,8 +43,24 @@ exports.handler = async (event, context) => {
     // 将 base64 转换为 Buffer
     const pdfBuffer = Buffer.from(base64Data, 'base64');
 
-    // 解析 PDF
-    const data = await pdfParse(pdfBuffer);
+    // 检查文件大小（限制 10MB）
+    const maxSize = 10 * 1024 * 1024; // 10MB
+    if (pdfBuffer.length > maxSize) {
+      return {
+        statusCode: 400,
+        headers,
+        body: JSON.stringify({ 
+          success: false,
+          error: 'PDF 文件过大，请使用小于 10MB 的文件' 
+        })
+      };
+    }
+
+    // 解析 PDF（优化选项）
+    const data = await pdfParse(pdfBuffer, {
+      max: 0, // 解析所有页
+      version: 'v2.0.550' // 使用最新版本
+    });
 
     // 返回提取的文本
     return {

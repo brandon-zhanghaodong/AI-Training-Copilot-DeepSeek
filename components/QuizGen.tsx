@@ -59,19 +59,24 @@ const QuizGen: React.FC = () => {
       if (file.type === "application/pdf") {
         try {
           setLoading(true);
-          const base64 = await fileToBase64(file);
           
-          // 调用后端解析 PDF
+          // 先显示文件信息，然后异步解析
+          setFileData({ base64: '', mimeType: file.type, name: file.name });
+          setInputText('');
+          
+          // 异步转换和解析
+          const base64 = await fileToBase64(file);
           const text = await parsePDF(base64);
           
+          // 更新为完整数据
           setFileData({ base64, mimeType: file.type, name: file.name });
           setParsedText(text);
-          setInputText(''); // Clear text if file is uploaded
           
-          alert(`PDF 解析成功！提取了 ${text.length} 个字符`);
+          // 不再显示 alert，只在控制台记录
+          console.log(`✅ PDF 解析成功: ${text.length} 个字符`);
         } catch (error) {
           console.error('PDF 处理失败:', error);
-          alert("PDF 解析失败，请确保文件格式正确");
+          alert("解析失败，请确保 PDF 是文本版（非扫描版）");
           setFileData(null);
           setParsedText('');
         } finally {
@@ -180,11 +185,25 @@ const QuizGen: React.FC = () => {
         {fileData && (
           <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-xl flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <i className="fas fa-file-pdf text-2xl text-red-500"></i>
+              {loading ? (
+                <i className="fas fa-spinner fa-spin text-2xl text-blue-500"></i>
+              ) : (
+                <i className="fas fa-file-pdf text-2xl text-red-500"></i>
+              )}
               <div>
                 <p className="text-sm font-medium text-slate-800">{fileData.name}</p>
                 <p className="text-xs text-slate-500">
-                  {parsedText ? `已解析 ${parsedText.length} 个字符` : '已上传'}
+                  {loading ? (
+                    <span className="text-blue-600">
+                      <i className="fas fa-circle-notch fa-spin"></i> 解析中...
+                    </span>
+                  ) : parsedText ? (
+                    <span className="text-green-600">
+                      <i className="fas fa-check-circle"></i> 已就绪，共 {parsedText.length} 个字符
+                    </span>
+                  ) : (
+                    '已上传'
+                  )}
                 </p>
               </div>
             </div>

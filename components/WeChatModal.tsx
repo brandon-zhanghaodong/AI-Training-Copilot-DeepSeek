@@ -28,6 +28,11 @@ export default function WeChatModal({ isOpen, onClose }: WeChatModalProps) {
       return;
     }
 
+    if (!company.trim()) {
+      alert('请输入公司名称');
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
@@ -49,7 +54,7 @@ export default function WeChatModal({ isOpen, onClose }: WeChatModalProps) {
       if (data.success) {
         localStorage.setItem('wechat_submitted', 'true');
         setSubmitted(true);
-        alert('感谢您的支持！我们会尽快联系您 🎉');
+        alert('感谢您的申请，期待多多交流！🎉');
         setTimeout(() => {
           onClose();
         }, 1500);
@@ -64,6 +69,29 @@ export default function WeChatModal({ isOpen, onClose }: WeChatModalProps) {
     }
   };
 
+  const handleShare = () => {
+    const shareUrl = window.location.href;
+    const shareText = 'AI 培训助手 - HR 效能提升专家，快来试试吧！';
+    
+    // 尝试使用 Web Share API
+    if (navigator.share) {
+      navigator.share({
+        title: 'AI 培训助手',
+        text: shareText,
+        url: shareUrl
+      }).catch((error) => {
+        console.log('分享取消或失败:', error);
+      });
+    } else {
+      // 降级方案：复制链接
+      navigator.clipboard.writeText(shareUrl).then(() => {
+        alert('链接已复制到剪贴板，快去分享吧！');
+      }).catch(() => {
+        alert(`请复制此链接分享：\n${shareUrl}`);
+      });
+    }
+  };
+
   if (!isOpen || submitted) return null;
 
   return (
@@ -72,15 +100,24 @@ export default function WeChatModal({ isOpen, onClose }: WeChatModalProps) {
       onClick={onClose}
     >
       <div 
-        className="bg-white rounded-lg p-8 max-w-md w-full mx-4 shadow-2xl"
+        className="bg-white rounded-lg p-8 max-w-md w-full mx-4 shadow-2xl relative"
         onClick={(e) => e.stopPropagation()}
       >
+        {/* 分享按钮 */}
+        <button
+          onClick={handleShare}
+          className="absolute top-4 right-4 text-gray-400 hover:text-blue-600 transition-colors"
+          title="分享给朋友"
+        >
+          <i className="fas fa-share-alt text-lg"></i>
+        </button>
+
         <div className="text-center mb-6">
           <h2 className="text-2xl font-bold text-gray-800 mb-2">
             👋 欢迎使用 AI 培训助手
           </h2>
           <p className="text-gray-600 text-sm">
-            留下您的微信，获取更多培训资源和 HR 专属服务
+            留下您的联系方式，获取更多培训资源和 HR 专属服务
           </p>
         </div>
 
@@ -114,7 +151,7 @@ export default function WeChatModal({ isOpen, onClose }: WeChatModalProps) {
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              公司（可选）
+              公司 <span className="text-red-500">*</span>
             </label>
             <input
               type="text"
@@ -122,6 +159,7 @@ export default function WeChatModal({ isOpen, onClose }: WeChatModalProps) {
               onChange={(e) => setCompany(e.target.value)}
               placeholder="请输入您的公司名称"
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              required
             />
           </div>
 

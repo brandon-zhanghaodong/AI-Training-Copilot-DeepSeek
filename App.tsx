@@ -65,9 +65,8 @@ const App: React.FC = () => {
           </div>
           <div className="flex-1">
             <h1 className="text-base font-bold text-slate-900 leading-tight tracking-tight">AI 培训助手</h1>
-            <p className="text-xs text-slate-500 font-medium mt-0.5">HR 效能提升专家</p>
-            <p className="text-[10px] text-blue-600 font-medium mt-0.5">
-              *由知识星球：AI时代的HR创建
+            <p className="text-xs text-slate-500 font-medium mt-0.5">
+              HR 效能提升专家 · <span className="text-blue-600">知识星球：AI时代的HR</span>
             </p>
           </div>
         </header>
