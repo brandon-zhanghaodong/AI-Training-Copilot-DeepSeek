@@ -16,13 +16,10 @@ const App: React.FC = () => {
       setApiKeyMissing(true);
     }
 
-    // 延迟 5 秒后显示微信收集弹窗（仅首次访问）
+    // 立即显示注册弹窗（仅首次访问）
     const hasSubmitted = localStorage.getItem('wechat_submitted');
     if (!hasSubmitted) {
-      const timer = setTimeout(() => {
-        setShowWeChatModal(true);
-      }, 5000);
-      return () => clearTimeout(timer);
+      setShowWeChatModal(true);
     }
   }, []);
 
@@ -66,7 +63,7 @@ const App: React.FC = () => {
           <div className="flex-1">
             <h1 className="text-base font-bold text-slate-900 leading-tight tracking-tight">AI 培训助手</h1>
             <p className="text-xs text-slate-500 font-medium mt-0.5">
-              HR 效能提升专家 · <span className="text-blue-600">知识星球：AI时代的HR</span>
+              HR 效能提升专家 · <span className="text-blue-600">由知识星球：AI时代的HR 创建</span>
             </p>
           </div>
         </header>

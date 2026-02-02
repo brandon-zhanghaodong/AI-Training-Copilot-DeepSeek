@@ -9,6 +9,7 @@ export default function WeChatModal({ isOpen, onClose }: WeChatModalProps) {
   const [wechat, setWechat] = useState('');
   const [name, setName] = useState('');
   const [company, setCompany] = useState('');
+  const [contact, setContact] = useState(''); // 手机号或邮箱
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 
@@ -28,8 +29,18 @@ export default function WeChatModal({ isOpen, onClose }: WeChatModalProps) {
       return;
     }
 
+    if (!name.trim()) {
+      alert('请输入姓名');
+      return;
+    }
+
     if (!company.trim()) {
       alert('请输入公司名称');
+      return;
+    }
+
+    if (!contact.trim()) {
+      alert('请输入手机号或邮箱');
       return;
     }
 
@@ -45,6 +56,7 @@ export default function WeChatModal({ isOpen, onClose }: WeChatModalProps) {
           wechat: wechat.trim(),
           name: name.trim(),
           company: company.trim(),
+          contact: contact.trim(),
           timestamp: new Date().toISOString()
         })
       });
@@ -96,11 +108,11 @@ export default function WeChatModal({ isOpen, onClose }: WeChatModalProps) {
 
   return (
     <div 
-      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
       onClick={onClose}
     >
       <div 
-        className="bg-white rounded-lg p-8 max-w-md w-full mx-4 shadow-2xl relative"
+        className="bg-white rounded-lg p-6 max-w-md w-full shadow-2xl relative max-h-[90vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
         {/* 分享按钮 */}
@@ -117,11 +129,39 @@ export default function WeChatModal({ isOpen, onClose }: WeChatModalProps) {
             👋 欢迎使用 AI 培训助手
           </h2>
           <p className="text-gray-600 text-sm">
-            留下您的联系方式，获取更多培训资源和 HR 专属服务
+            请先注册，即可免费使用所有功能
           </p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              姓名 <span className="text-red-500">*</span>
+            </label>
+            <input
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="请输入您的姓名"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              required
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              公司 <span className="text-red-500">*</span>
+            </label>
+            <input
+              type="text"
+              value={company}
+              onChange={(e) => setCompany(e.target.value)}
+              placeholder="请输入您的公司名称"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              required
+            />
+          </div>
+
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               微信号 <span className="text-red-500">*</span>
@@ -138,26 +178,13 @@ export default function WeChatModal({ isOpen, onClose }: WeChatModalProps) {
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              姓名（可选）
+              手机号/邮箱 <span className="text-red-500">*</span>
             </label>
             <input
               type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="请输入您的姓名"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              公司 <span className="text-red-500">*</span>
-            </label>
-            <input
-              type="text"
-              value={company}
-              onChange={(e) => setCompany(e.target.value)}
-              placeholder="请输入您的公司名称"
+              value={contact}
+              onChange={(e) => setContact(e.target.value)}
+              placeholder="请输入手机号或邮箱"
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               required
             />
@@ -176,7 +203,7 @@ export default function WeChatModal({ isOpen, onClose }: WeChatModalProps) {
               disabled={isSubmitting}
               className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:bg-gray-400"
             >
-              {isSubmitting ? '提交中...' : '提交'}
+              {isSubmitting ? '提交中...' : '立即注册'}
             </button>
           </div>
         </form>

@@ -28,7 +28,7 @@ exports.handler = async (event, context) => {
   try {
     // 解析请求体
     const body = JSON.parse(event.body);
-    const { wechat, name, company, timestamp } = body;
+    const { wechat, name, company, contact, timestamp } = body;
 
     if (!wechat) {
       return {
@@ -38,11 +38,36 @@ exports.handler = async (event, context) => {
       };
     }
 
+    if (!name) {
+      return {
+        statusCode: 400,
+        headers,
+        body: JSON.stringify({ error: '请提供姓名' })
+      };
+    }
+
+    if (!company) {
+      return {
+        statusCode: 400,
+        headers,
+        body: JSON.stringify({ error: '请提供公司名称' })
+      };
+    }
+
+    if (!contact) {
+      return {
+        statusCode: 400,
+        headers,
+        body: JSON.stringify({ error: '请提供手机号或邮箱' })
+      };
+    }
+
     // 记录到日志（Netlify 会保存这些日志）
-    console.log('新用户信息收集:', {
+    console.log('新用户注册信息:', {
+      name,
+      company,
       wechat,
-      name: name || '未提供',
-      company: company || '未提供',
+      contact,
       timestamp: timestamp || new Date().toISOString(),
       userAgent: event.headers['user-agent'],
       ip: event.headers['x-forwarded-for'] || event.headers['client-ip']
