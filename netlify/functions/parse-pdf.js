@@ -72,15 +72,15 @@ exports.handler = async (event, context) => {
     // 将 base64 转换为 Buffer
     const pdfBuffer = Buffer.from(base64Data, 'base64');
 
-    // 检查文件大小（限制 5MB 以提高速度）
-    const maxSize = 5 * 1024 * 1024; // 5MB
+    // 检查文件大小（限制 20MB）
+    const maxSize = 20 * 1024 * 1024; // 20MB
     if (pdfBuffer.length > maxSize) {
       return {
         statusCode: 400,
         headers,
         body: JSON.stringify({ 
           success: false,
-          error: 'PDF 文件过大，请使用小于 5MB 的文件以获得更快的解析速度' 
+          error: 'PDF 文件过大，请使用小于 20MB 的文件' 
         })
       };
     }

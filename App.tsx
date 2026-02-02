@@ -12,9 +12,14 @@ const App: React.FC = () => {
   const [showWeChatModal, setShowWeChatModal] = useState(false);
 
   useEffect(() => {
-    if (!process.env.API_KEY) {
+    // 检查 API Key（使用 import.meta.env 而不是 process.env）
+    const apiKey = import.meta.env.VITE_DEEPSEEK_API_KEY || 
+                   import.meta.env.DEEPSEEK_API_KEY || 
+                   import.meta.env.API_KEY;
+    
+    if (!apiKey) {
+      console.warn('⚠️ API Key 未找到');
       setApiKeyMissing(true);
-      return;
     }
 
     // 检查是否已经注册过

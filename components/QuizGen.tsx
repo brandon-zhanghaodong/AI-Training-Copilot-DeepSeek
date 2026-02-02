@@ -68,9 +68,9 @@ const QuizGen: React.FC = () => {
     if (file) {
       if (file.type === "application/pdf") {
         // 检查文件大小
-        const maxSize = 5 * 1024 * 1024; // 5MB
+        const maxSize = 20 * 1024 * 1024; // 20MB
         if (file.size > maxSize) {
-          alert('🚨 文件过大！请使用小于 5MB 的 PDF 文件以获得更快的解析速度。');
+          alert('🚨 文件过大！请使用小于 20MB 的 PDF 文件。');
           return;
         }
         
