@@ -3,10 +3,16 @@ import { FeedbackAnalysis, QuizItem } from "../types";
 
 // Initialize DeepSeek Client
 const getClient = () => {
-  const apiKey = import.meta.env.VITE_DEEPSEEK_API_KEY || process.env.DEEPSEEK_API_KEY;
+  // Netlify 环境变量不需要 VITE_ 前缀，直接使用 DEEPSEEK_API_KEY
+  const apiKey = import.meta.env.VITE_DEEPSEEK_API_KEY || 
+                 import.meta.env.DEEPSEEK_API_KEY ||
+                 process.env.DEEPSEEK_API_KEY;
+  
   if (!apiKey) {
-    throw new Error("DeepSeek API Key is missing.");
+    console.error("Available env vars:", Object.keys(import.meta.env));
+    throw new Error("DeepSeek API Key is missing. Please set DEEPSEEK_API_KEY in Netlify environment variables.");
   }
+  
   return new OpenAI({
     apiKey,
     baseURL: "https://api.deepseek.com/v1",
