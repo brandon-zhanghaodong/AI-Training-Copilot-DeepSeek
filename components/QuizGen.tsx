@@ -10,6 +10,7 @@ const QuizGen: React.FC = () => {
   const [quizData, setQuizData] = useState<QuizItem[]>([]);
   const [loading, setLoading] = useState(false);
   const [parsedText, setParsedText] = useState('');
+  const [parseStatus, setParseStatus] = useState(''); // 解析状态提示
 
   // Helper to convert file to base64
   const fileToBase64 = (file: File): Promise<string> => {
@@ -31,6 +32,8 @@ const QuizGen: React.FC = () => {
 
   const parsePDF = async (base64Data: string): Promise<string> => {
     try {
+      setParseStatus('📄 正在解析 PDF...');
+      
       const response = await fetch('/.netlify/functions/parse-pdf', {
         method: 'POST',
         headers: {
@@ -42,13 +45,20 @@ const QuizGen: React.FC = () => {
       const data = await response.json();
 
       if (data.success) {
-        console.log(`✅ PDF 解析成功: ${data.pages} 页`);
+        const cacheInfo = data.cached ? ' (缓存)' : '';
+        setParseStatus(`✅ 解析完成: ${data.pages} 页, ${data.characters} 字符, ${data.parseTime}ms${cacheInfo}`);
+        console.log(`✅ PDF 解析成功: ${data.pages} 页, ${data.parseTime}ms`);
+        
+        // 2秒后清除状态
+        setTimeout(() => setParseStatus(''), 2000);
+        
         return data.text;
       } else {
         throw new Error(data.error || 'PDF 解析失败');
       }
     } catch (error) {
       console.error('PDF 解析错误:', error);
+      setParseStatus('❌ 解析失败');
       throw error;
     }
   };
@@ -57,28 +67,38 @@ const QuizGen: React.FC = () => {
     const file = e.target.files?.[0];
     if (file) {
       if (file.type === "application/pdf") {
+        // 检查文件大小
+        const maxSize = 5 * 1024 * 1024; // 5MB
+        if (file.size > maxSize) {
+          alert('🚨 文件过大！请使用小于 5MB 的 PDF 文件以获得更快的解析速度。');
+          return;
+        }
+        
         try {
           setLoading(true);
+          setParseStatus('💾 正在读取文件...');
           
-          // 先显示文件信息，然后异步解析
+          // 先显示文件信息
           setFileData({ base64: '', mimeType: file.type, name: file.name });
           setInputText('');
           
           // 异步转换和解析
           const base64 = await fileToBase64(file);
+          setParseStatus('🚀 正在上传并解析...');
+          
           const text = await parsePDF(base64);
           
           // 更新为完整数据
           setFileData({ base64, mimeType: file.type, name: file.name });
           setParsedText(text);
           
-          // 不再显示 alert，只在控制台记录
           console.log(`✅ PDF 解析成功: ${text.length} 个字符`);
         } catch (error) {
           console.error('PDF 处理失败:', error);
           alert("解析失败，请确保 PDF 是文本版（非扫描版）");
           setFileData(null);
           setParsedText('');
+          setParseStatus('');
         } finally {
           setLoading(false);
         }
@@ -193,7 +213,11 @@ const QuizGen: React.FC = () => {
               <div>
                 <p className="text-sm font-medium text-slate-800">{fileData.name}</p>
                 <p className="text-xs text-slate-500">
-                  {loading ? (
+                  {loading && parseStatus ? (
+                    <span className="text-blue-600 font-medium">
+                      {parseStatus}
+                    </span>
+                  ) : loading ? (
                     <span className="text-blue-600">
                       <i className="fas fa-circle-notch fa-spin"></i> 解析中...
                     </span>
