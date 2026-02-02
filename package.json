@@ -13,7 +13,8 @@
     "recharts": "^3.7.0",
     "openai": "^4.77.3",
     "react-dom": "^19.2.3",
-    "react-markdown": "^10.1.0"
+    "react-markdown": "^10.1.0",
+    "pdf-parse": "^1.1.1"
   },
   "devDependencies": {
     "@types/node": "^22.14.0",

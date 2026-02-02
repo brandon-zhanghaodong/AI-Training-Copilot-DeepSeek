@@ -4,14 +4,25 @@ import CourseGen from './components/CourseGen';
 import QuizGen from './components/QuizGen';
 import FeedbackInsight from './components/FeedbackInsight';
 import OpsWriter from './components/OpsWriter';
+import WeChatModal from './components/WeChatModal';
 
 const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState<ModuleType>(ModuleType.COURSE_GEN);
   const [apiKeyMissing, setApiKeyMissing] = useState(false);
+  const [showWeChatModal, setShowWeChatModal] = useState(false);
 
   useEffect(() => {
     if (!process.env.API_KEY) {
       setApiKeyMissing(true);
+    }
+
+    // 延迟 5 秒后显示微信收集弹窗（仅首次访问）
+    const hasSubmitted = localStorage.getItem('wechat_submitted');
+    if (!hasSubmitted) {
+      const timer = setTimeout(() => {
+        setShowWeChatModal(true);
+      }, 5000);
+      return () => clearTimeout(timer);
     }
   }, []);
 
@@ -52,9 +63,12 @@ const App: React.FC = () => {
           <div className="w-10 h-10 bg-gradient-to-br from-brand-500 to-brand-700 rounded-xl flex items-center justify-center text-white shadow-lg shadow-brand-500/20">
             <i className="fas fa-robot text-lg"></i>
           </div>
-          <div>
+          <div className="flex-1">
             <h1 className="text-base font-bold text-slate-900 leading-tight tracking-tight">AI 培训助手</h1>
             <p className="text-xs text-slate-500 font-medium mt-0.5">HR 效能提升专家</p>
+            <p className="text-[10px] text-blue-600 font-medium mt-0.5">
+              *由知识星球：AI时代的HR创建
+            </p>
           </div>
         </header>
 
@@ -95,6 +109,12 @@ const App: React.FC = () => {
           </div>
         </nav>
       </div>
+
+      {/* WeChat Collection Modal */}
+      <WeChatModal 
+        isOpen={showWeChatModal} 
+        onClose={() => setShowWeChatModal(false)} 
+      />
     </div>
   );
 };
@@ -106,21 +126,20 @@ interface TabButtonProps {
   label: string;
 }
 
-const TabButton: React.FC<TabButtonProps> = ({ active, onClick, icon, label }) => (
-  <button
-    onClick={onClick}
-    className={`flex flex-col items-center justify-center py-3 px-2 w-full transition-all duration-200 group relative ${
-      active ? 'text-brand-600' : 'text-slate-400 hover:text-slate-600'
-    }`}
-  >
-    <div className={`text-xl mb-1 transition-transform duration-200 ${active ? 'transform scale-110' : 'group-hover:scale-105'}`}>
-      <i className={`fas ${icon}`}></i>
-    </div>
-    <span className={`text-[10px] font-semibold tracking-wide ${active ? 'opacity-100' : 'opacity-80'}`}>{label}</span>
-    {active && (
-      <span className="absolute top-0 left-1/2 -translate-x-1/2 w-8 h-1 bg-brand-500 rounded-b-full shadow-[0_2px_8px_rgba(59,130,246,0.5)]"></span>
-    )}
-  </button>
-);
+const TabButton: React.FC<TabButtonProps> = ({ active, onClick, icon, label }) => {
+  return (
+    <button
+      onClick={onClick}
+      className={`flex flex-col items-center justify-center py-2 px-4 rounded-lg transition-all duration-200 ${
+        active
+          ? 'text-brand-600 bg-brand-50'
+          : 'text-slate-500 hover:text-slate-700 hover:bg-slate-50'
+      }`}
+    >
+      <i className={`fas ${icon} text-lg mb-1`}></i>
+      <span className="text-xs font-medium">{label}</span>
+    </button>
+  );
+};
 
 export default App;
